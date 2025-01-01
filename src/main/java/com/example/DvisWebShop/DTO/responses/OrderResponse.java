@@ -14,5 +14,4 @@ public class OrderResponse {
     private BigDecimal price;
     private LocalDateTime date;
     private UserResponse user;
-    private List<ProductResponse> products;
 }

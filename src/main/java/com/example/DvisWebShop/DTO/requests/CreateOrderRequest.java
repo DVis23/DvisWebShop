@@ -10,8 +10,8 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 public class CreateOrderRequest {
+    private Integer orderId;
     private BigDecimal price;
     private LocalDateTime date;
-    private Integer userId;
-    private List<CreateProductRequest> products;
+    private CreateUserRequest user;
 }

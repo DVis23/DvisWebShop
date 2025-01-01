@@ -8,13 +8,13 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
 @Setter
 @Accessors(chain = true)
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "product")
 public class Product {
@@ -33,14 +33,8 @@ public class Product {
     @Column(name = "company", nullable = false)
     private String company;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Order order;
-
-    public Product(String name, BigDecimal price, String company) {
-        this.name = name;
-        this.price = price;
-        this.company = company;
-    }
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Order> orders;
 
     @Override
     public boolean equals(Object o) {

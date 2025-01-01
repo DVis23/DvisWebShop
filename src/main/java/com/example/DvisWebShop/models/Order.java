@@ -1,7 +1,6 @@
 package com.example.DvisWebShop.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +15,6 @@ import java.util.Objects;
 @Setter
 @Accessors(chain = true)
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "order")
 public class Order {
@@ -35,14 +33,8 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Product> products;
-
-    public Order(BigDecimal price, LocalDateTime date, User user) {
-        this.price = price;
-        this.date = date;
-        this.user = user;
-    }
 
     @Override
     public boolean equals(Object o) {

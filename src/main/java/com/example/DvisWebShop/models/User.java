@@ -14,7 +14,6 @@ import java.util.Objects;
 @Setter
 @Accessors(chain = true)
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "user")
 public class User {
@@ -38,13 +37,6 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Order> orders;
-
-    public User(String login, String firstName, String lastName, int age) {
-        this.login = login;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
-    }
 
     @Override
     public boolean equals(Object o) {

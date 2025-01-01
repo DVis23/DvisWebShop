@@ -7,6 +7,8 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface UserService {
+
+    @NotNull
     List<UserResponse> getAllUsers();
 
     @NotNull

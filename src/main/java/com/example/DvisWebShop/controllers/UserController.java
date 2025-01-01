@@ -1,6 +1,7 @@
 package com.example.DvisWebShop.controllers;
 
 import com.example.DvisWebShop.DTO.requests.CreateUserRequest;
+import com.example.DvisWebShop.DTO.responses.OrderResponse;
 import com.example.DvisWebShop.DTO.responses.UserResponse;
 import com.example.DvisWebShop.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +53,11 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         boolean isDeleted = userService.deleteUser(id);
         return isDeleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{userId}/orders")
+    public ResponseEntity<List<OrderResponse>> getUserOrders(@PathVariable Integer userId) {
+        List<OrderResponse> orders = userService.getUserOrders(userId);
+        return ResponseEntity.ok(orders);
     }
 }
