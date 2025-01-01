@@ -7,11 +7,13 @@ import com.example.DvisWebShop.DTO.responses.UserResponse;
 import com.example.DvisWebShop.models.Order;
 import com.example.DvisWebShop.models.User;
 import com.example.DvisWebShop.repositories.OrderRepository;
+import com.example.DvisWebShop.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -24,6 +26,7 @@ import static java.util.Optional.ofNullable;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
 
     @Override
     @NotNull
@@ -46,11 +49,10 @@ public class OrderServiceImpl implements OrderService {
     @NotNull
     @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByUserId(Integer userId) {
-        List<Order> orders = orderRepository.findByUserId(userId);
-        if (orders.isEmpty()) {
-            throw new NoSuchElementException("USER with id = '" + userId + "' does not exist");
-        }
-        return orders.stream()
+        userRepository.findById(userId).orElseThrow(
+                () -> new NoSuchElementException("USER with id = '" + userId + "' does not exist")
+        );
+        return orderRepository.findByUserId(userId).stream()
                 .map(this::buildOrderResponse)
                 .collect(Collectors.toList());
     }
@@ -68,15 +70,9 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResponse updateOrder(Integer id, CreateOrderRequest createOrderRequest) {
         Order order = orderRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("Order with id = '" + id + "' does not exist"));
+                () -> new NoSuchElementException("ORDER with id = '" + id + "' does not exist"));
         ofNullable(createOrderRequest.getPrice()).map(order::setPrice);
         ofNullable(createOrderRequest.getDate()).map(order::setDate);
-
-        CreateUserRequest createUserRequest = createOrderRequest.getUser();
-        ofNullable(createUserRequest.getLogin()).map(order.getUser()::setLogin);
-        ofNullable(createUserRequest.getFirstName()).map(order.getUser()::setFirstName);
-        ofNullable(createUserRequest.getLastName()).map(order.getUser()::setLastName);
-        Optional.of(createUserRequest.getAge()).map(order.getUser()::setAge);
         return buildOrderResponse(orderRepository.save(order));
     }
 
