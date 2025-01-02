@@ -13,5 +13,5 @@ public class CreateProductRequest {
     private String name;
     private BigDecimal price;
     private String company;
-    private List<CreateOrderRequest> orders;
+    private List<Integer> ordersId;
 }

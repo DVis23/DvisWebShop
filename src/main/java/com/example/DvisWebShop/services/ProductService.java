@@ -1,6 +1,7 @@
 package com.example.DvisWebShop.services;
 
 import com.example.DvisWebShop.DTO.requests.CreateProductRequest;
+import com.example.DvisWebShop.DTO.responses.OrderResponse;
 import com.example.DvisWebShop.DTO.responses.ProductResponse;
 
 import javax.validation.constraints.NotNull;
@@ -13,6 +14,9 @@ public interface ProductService {
 
     @NotNull
     ProductResponse getProductById(@NotNull Integer id);
+
+    @NotNull
+    List<OrderResponse> getProductOrdersById(@NotNull Integer id);
 
     @NotNull
     List<ProductResponse> getProductsByOrderId(@NotNull Integer orderId);

@@ -16,30 +16,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;  // Сервис для работы с пользователями
+    private final UserService userService;
 
-    // Получение всех пользователей
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
-    // Получение одного пользователя по ID
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Integer id) {
         UserResponse user = userService.getUserById(id);
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 
-    // Создание нового пользователя
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest createUserRequest) {
         UserResponse userResponse = userService.createUser(createUserRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
     }
 
-    // Обновление существующего пользователя
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable Integer id,
@@ -48,7 +44,6 @@ public class UserController {
         return updatedUser != null ? ResponseEntity.ok(updatedUser) : ResponseEntity.notFound().build();
     }
 
-    // Удаление пользователя по ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         boolean isDeleted = userService.deleteUser(id);
@@ -57,7 +52,7 @@ public class UserController {
 
     @GetMapping("/{userId}/orders")
     public ResponseEntity<List<OrderResponse>> getUserOrders(@PathVariable Integer userId) {
-        List<OrderResponse> orders = userService.getUserOrders(userId);
+        List<OrderResponse> orders = userService.getUserOrdersById(userId);
         return ResponseEntity.ok(orders);
     }
 }

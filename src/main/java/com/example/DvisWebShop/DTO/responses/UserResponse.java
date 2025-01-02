@@ -12,5 +12,6 @@ public class UserResponse {
     private String login;
     private String firstName;
     private String lastName;
-    private int age;
+    private Integer age;
+    private List<Integer> ordersId;
 }

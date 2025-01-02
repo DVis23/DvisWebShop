@@ -1,7 +1,6 @@
 package com.example.DvisWebShop.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,7 +32,7 @@ public class User {
     private String lastName;
 
     @Column(name = "age", nullable = false)
-    private int age;
+    private Integer age;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Order> orders;

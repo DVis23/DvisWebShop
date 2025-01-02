@@ -13,5 +13,6 @@ public class OrderResponse {
     private Integer orderId;
     private BigDecimal price;
     private LocalDateTime date;
-    private UserResponse user;
+    private Integer userId;
+    private List<Integer> productsId;
 }

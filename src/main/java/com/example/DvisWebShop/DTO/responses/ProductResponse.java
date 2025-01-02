@@ -13,5 +13,5 @@ public class ProductResponse {
     private String name;
     private BigDecimal price;
     private String company;
-    private List<OrderResponse> orders;
+    private List<Integer> ordersId;
 }

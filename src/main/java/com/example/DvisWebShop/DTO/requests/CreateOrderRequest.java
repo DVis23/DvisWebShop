@@ -13,5 +13,6 @@ public class CreateOrderRequest {
     private Integer orderId;
     private BigDecimal price;
     private LocalDateTime date;
-    private CreateUserRequest user;
+    private Integer userId;
+    private List<Integer> productsId;
 }
