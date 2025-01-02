@@ -3,12 +3,11 @@ package com.example.DvisWebShop.services;
 import com.example.DvisWebShop.DTO.requests.CreateUserRequest;
 import com.example.DvisWebShop.DTO.responses.OrderResponse;
 import com.example.DvisWebShop.DTO.responses.UserResponse;
-import com.example.DvisWebShop.models.Order;
-import com.example.DvisWebShop.models.Product;
 import com.example.DvisWebShop.models.User;
 import com.example.DvisWebShop.repositories.OrderRepository;
 import com.example.DvisWebShop.repositories.UserRepository;
 
+import com.example.DvisWebShop.utils.ResponseBuilder;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ import static java.util.Optional.ofNullable;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends BaseServices implements UserService {
 
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
@@ -31,35 +30,22 @@ public class UserServiceImpl implements UserService {
     @NotNull
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream()
-                .map(this::buildUserResponse)
-                .collect(Collectors.toList());
+        return buildResponseList(userRepository.findAll(), ResponseBuilder::buildUserResponse);
     }
 
     @Override
     @NotNull
     @Transactional(readOnly = true)
     public UserResponse getUserById(@NotNull Integer id) {
-        return userRepository.findById(id).map(this::buildUserResponse).orElseThrow(
-                () -> new EntityNotFoundException("USER with id = '" + id + "' does not exist"));
+        return ResponseBuilder.buildUserResponse(findEntityById(userRepository.findById(id), "USER", id));
     }
 
     @Override
     @NotNull
     @Transactional(readOnly = true)
     public List<OrderResponse> getUserOrdersById(@NotNull Integer id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("USER with id = '" + id + "' does not exist"));
-        return user.getOrders().stream()
-                .map(order -> new OrderResponse()
-                        .setOrderId(order.getOrderId())
-                        .setPrice(order.getPrice())
-                        .setDate(order.getDate())
-                        .setUserId(order.getUser ().getUserId())
-                        .setProductsId(order.getProducts().stream()
-                                .map(Product::getProductId)
-                                .collect(Collectors.toList())))
-                .collect(Collectors.toList());
+        User user = findEntityById(userRepository.findById(id), "USER", id);
+        return buildResponseList(user.getOrders(), ResponseBuilder::buildOrderResponse);
     }
 
     @Override
@@ -67,20 +53,19 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse createUser(@NotNull CreateUserRequest createUserRequest) {
         User user = buildUserRequest(createUserRequest);
-        return buildUserResponse(userRepository.save(user));
+        return ResponseBuilder.buildUserResponse(userRepository.save(user));
     }
 
     @Override
     @NotNull
     @Transactional
     public UserResponse updateUser(@NotNull Integer id, @NotNull CreateUserRequest createUserRequest) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("USER with id = '" + id + "' does not exist"));
+        User user = findEntityById(userRepository.findById(id), "USER", id);
         ofNullable(createUserRequest.getLogin()).map(user::setLogin);
         ofNullable(createUserRequest.getFirstName()).map(user::setFirstName);
         ofNullable(createUserRequest.getLastName()).map(user::setLastName);
         ofNullable(createUserRequest.getAge()).map(user::setAge);
-        return buildUserResponse(userRepository.save(user));
+        return ResponseBuilder.buildUserResponse(userRepository.save(user));
     }
 
     @Override
@@ -95,17 +80,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException("USER with id = '" + id + "' does not exist"));
     }
 
-    private UserResponse buildUserResponse(@NotNull User user) {
-        return new UserResponse()
-                .setUserId(user.getUserId())
-                .setLogin(user.getLogin())
-                .setFirstName(user.getFirstName())
-                .setLastName(user.getLastName())
-                .setAge(user.getAge())
-                .setOrdersId(user.getOrders().stream()
-                        .map(Order::getOrderId).collect(Collectors.toList()));
-    }
-
+    @NotNull
     private User buildUserRequest(@NotNull CreateUserRequest request) {
         return new User()
                 .setUserId(request.getUserId())
@@ -114,9 +89,9 @@ public class UserServiceImpl implements UserService {
                 .setLastName(request.getLastName())
                 .setAge(request.getAge())
                 .setOrders(request.getOrdersId().stream()
-                        .map(orderId -> orderRepository.findById(orderId)
-                                .orElseThrow(() -> new EntityNotFoundException(
-                                        "ORDER with id = '" + orderId + "' does not exist")))
+                        .map(orderId -> findEntityById(orderRepository.findById(orderId),
+                                "ORDER", orderId))
                         .collect(Collectors.toList()));
     }
+
 }

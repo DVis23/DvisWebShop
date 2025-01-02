@@ -5,11 +5,10 @@ import com.example.DvisWebShop.DTO.responses.OrderResponse;
 import com.example.DvisWebShop.DTO.responses.ProductResponse;
 import com.example.DvisWebShop.DTO.responses.UserResponse;
 import com.example.DvisWebShop.models.Order;
-import com.example.DvisWebShop.models.Product;
-import com.example.DvisWebShop.models.User;
 import com.example.DvisWebShop.repositories.OrderRepository;
 import com.example.DvisWebShop.repositories.ProductRepository;
 import com.example.DvisWebShop.repositories.UserRepository;
+import com.example.DvisWebShop.utils.ResponseBuilder;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ import static java.util.Optional.ofNullable;
 
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl extends BaseServices implements OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
@@ -34,64 +33,37 @@ public class OrderServiceImpl implements OrderService {
     @NotNull
     @Transactional(readOnly = true)
     public List<OrderResponse> getAllOrders() {
-        return orderRepository.findAll().stream()
-                .map(this::buildOrderResponse)
-                .collect(Collectors.toList());
+        return buildResponseList(orderRepository.findAll(), ResponseBuilder::buildOrderResponse);
     }
 
     @Override
     @NotNull
     @Transactional(readOnly = true)
     public OrderResponse getOrderById(@NotNull Integer id) {
-        return orderRepository.findById(id).map(this::buildOrderResponse).orElseThrow(
-                ()-> new EntityNotFoundException("ORDER with id = '" + id + "' does not exist"));
+        return ResponseBuilder.buildOrderResponse(findEntityById(orderRepository.findById(id), "ORDER", id));
     }
 
     @Override
     @NotNull
     @Transactional(readOnly = true)
     public UserResponse getOrderUserById(@NotNull Integer id) {
-        Order order = orderRepository.findById(id).orElseThrow(
-                ()-> new EntityNotFoundException("ORDER with id = '" + id + "' does not exist"));
-        User user = order.getUser();
-        return new UserResponse()
-                .setUserId(user.getUserId())
-                .setLogin(user.getLogin())
-                .setFirstName(user.getFirstName())
-                .setLastName(user.getLastName())
-                .setAge(user.getAge())
-                .setOrdersId(user.getOrders().stream()
-                        .map(Order::getOrderId).collect(Collectors.toList()));
+        Order order = findEntityById(orderRepository.findById(id), "ORDER", id);
+        return ResponseBuilder.buildUserResponse(order.getUser());
     }
 
     @Override
     @NotNull
     @Transactional(readOnly = true)
     public List<ProductResponse> getOrderProductsById(@NotNull Integer id) {
-        Order order = orderRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("ORDER with id = '" + id + "' does not exist"));
-        return order.getProducts().stream()
-                .map(product -> new ProductResponse()
-                        .setProductId(product.getProductId())
-                        .setName(product.getName())
-                        .setPrice(product.getPrice())
-                        .setCompany(product.getCompany())
-                        .setOrdersId(product.getOrders().stream()
-                                .map(Order::getOrderId)
-                                .collect(Collectors.toList())))
-                .collect(Collectors.toList());
+        Order order = findEntityById(orderRepository.findById(id), "ORDER", id);
+        return buildResponseList(new ArrayList<>(order.getProducts()), ResponseBuilder::buildProductResponse);
     }
 
     @Override
     @NotNull
     @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByUserId(@NotNull Integer userId) {
-        userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("USER with id = '" + userId + "' does not exist")
-        );
-        return orderRepository.findByUserId(userId).stream()
-                .map(this::buildOrderResponse)
-                .collect(Collectors.toList());
+        return buildResponseList(new ArrayList<>(orderRepository.findByUserId(userId)), ResponseBuilder::buildOrderResponse);
     }
 
     @Override
@@ -99,18 +71,17 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResponse createOrder(@NotNull CreateOrderRequest createOrderRequest) {
         Order order = buildOrderRequest(createOrderRequest);
-        return buildOrderResponse(orderRepository.save(order));
+        return ResponseBuilder.buildOrderResponse(orderRepository.save(buildOrderRequest(createOrderRequest)));
     }
 
     @Override
     @NotNull
     @Transactional
     public OrderResponse updateOrder(@NotNull Integer id, @NotNull CreateOrderRequest createOrderRequest) {
-        Order order = orderRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("ORDER with id = '" + id + "' does not exist"));
+        Order order = findEntityById(orderRepository.findById(id), "ORDER", id);
         ofNullable(createOrderRequest.getPrice()).map(order::setPrice);
         ofNullable(createOrderRequest.getDate()).map(order::setDate);
-        return buildOrderResponse(orderRepository.save(order));
+        return ResponseBuilder.buildOrderResponse(orderRepository.save(order));
     }
 
     @Override
@@ -125,28 +96,17 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("ORDER with id = '" + id + "' does not exist"));
     }
 
-    private OrderResponse buildOrderResponse(@NotNull Order order) {
-        return new OrderResponse()
-                .setOrderId(order.getOrderId())
-                .setPrice(order.getPrice())
-                .setDate(order.getDate())
-                .setUserId(order.getUser().getUserId())
-                .setProductsId(order.getProducts().stream()
-                        .map(Product::getProductId).collect(Collectors.toList()));
-    }
-
+    @NotNull
     private Order buildOrderRequest(@NotNull CreateOrderRequest request) {
         return new Order()
                 .setOrderId(request.getOrderId())
                 .setPrice(request.getPrice())
                 .setDate(request.getDate())
-                .setUser(userRepository.findById(request.getUserId()).orElseThrow(
-                        () -> new EntityNotFoundException(
-                                "USER with id = '" + request.getUserId() + "' does not exist")))
+                .setUser(findEntityById(userRepository.findById(request.getUserId()),
+                        "USER", request.getUserId()))
                 .setProducts(request.getProductsId().stream()
-                        .map(productId -> productRepository.findById(productId)
-                                .orElseThrow(() -> new EntityNotFoundException(
-                                        "PRODUCT with id = '" + productId + "' does not exist")))
+                        .map(productId -> findEntityById(productRepository.findById(productId),
+                                "PRODUCT", productId))
                         .collect(Collectors.toList()));
     }
 }
