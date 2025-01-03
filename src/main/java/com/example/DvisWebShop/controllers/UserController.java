@@ -30,6 +30,12 @@ public class UserController {
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/{id}/orders")
+    public ResponseEntity<List<OrderResponse>> getUserOrders(@PathVariable Integer id) {
+        List<OrderResponse> orders = userService.getUserOrdersById(id);
+        return ResponseEntity.ok(orders);
+    }
+
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest createUserRequest) {
         UserResponse userResponse = userService.createUser(createUserRequest);
@@ -48,11 +54,5 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         boolean isDeleted = userService.deleteUser(id);
         return isDeleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/{userId}/orders")
-    public ResponseEntity<List<OrderResponse>> getUserOrders(@PathVariable Integer userId) {
-        List<OrderResponse> orders = userService.getUserOrdersById(userId);
-        return ResponseEntity.ok(orders);
     }
 }

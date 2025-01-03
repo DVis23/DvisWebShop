@@ -61,13 +61,6 @@ public class OrderServiceImpl extends BaseServices implements OrderService {
 
     @Override
     @NotNull
-    @Transactional(readOnly = true)
-    public List<OrderResponse> getOrdersByUserId(@NotNull Integer userId) {
-        return buildResponseList(new ArrayList<>(orderRepository.findByUserId(userId)), ResponseBuilder::buildOrderResponse);
-    }
-
-    @Override
-    @NotNull
     @Transactional
     public OrderResponse createOrder(@NotNull CreateOrderRequest createOrderRequest) {
         Order order = buildOrderRequest(createOrderRequest);

@@ -23,9 +23,6 @@ public interface OrderService {
     List<ProductResponse> getOrderProductsById(@NotNull Integer id);
 
     @NotNull
-    List<OrderResponse> getOrdersByUserId(@NotNull Integer userId);
-
-    @NotNull
     OrderResponse createOrder(@NotNull CreateOrderRequest createOrderRequest);
 
     @NotNull

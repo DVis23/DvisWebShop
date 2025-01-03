@@ -50,13 +50,6 @@ public class ProductServiceImpl extends BaseServices implements ProductService{
 
     @Override
     @NotNull
-    @Transactional(readOnly = true)
-    public List<ProductResponse> getProductsByOrderId(@NotNull Integer orderId) {
-        return buildResponseList(new ArrayList<>(productRepository.findByOrderId(orderId)), ResponseBuilder::buildProductResponse);
-    }
-
-    @Override
-    @NotNull
     @Transactional
     public ProductResponse createProduct(@NotNull CreateProductRequest createProductRequest) {
         Product product = buildProductRequest(createProductRequest);
