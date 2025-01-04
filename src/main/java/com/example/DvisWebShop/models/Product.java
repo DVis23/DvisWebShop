@@ -15,7 +15,7 @@ import java.util.Objects;
 @Accessors(chain = true)
 @NoArgsConstructor
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 public class Product {
 
     @Id
@@ -32,7 +32,7 @@ public class Product {
     @Column(name = "company", nullable = false)
     private String company;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
     private List<Order> orders;
 
     @Override

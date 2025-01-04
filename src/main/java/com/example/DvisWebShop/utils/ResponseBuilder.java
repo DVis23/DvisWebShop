@@ -8,20 +8,21 @@ import com.example.DvisWebShop.models.Product;
 import com.example.DvisWebShop.models.User;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class ResponseBuilder {
 
     public static UserResponse buildUserResponse(@NotNull User user) {
         return new UserResponse()
-                .setUserId(user.getUserId())
-                .setLogin(user.getLogin())
-                .setFirstName(user.getFirstName())
-                .setLastName(user.getLastName())
-                .setAge(user.getAge())
-                .setOrdersId(user.getOrders().stream()
-                        .map(Order::getOrderId)
-                        .collect(Collectors.toList()));
+                    .setUserId(user.getUserId())
+                    .setLogin(user.getLogin())
+                    .setFirstName(user.getFirstName())
+                    .setLastName(user.getLastName())
+                    .setAge(user.getAge())
+                    .setOrdersId(user.getOrders() != null ? user.getOrders().stream()
+                            .map(Order::getOrderId)
+                            .collect(Collectors.toList()) : Collections.emptyList());
     }
 
     public static OrderResponse buildOrderResponse(@NotNull Order order) {
@@ -37,12 +38,12 @@ public class ResponseBuilder {
 
     public static ProductResponse buildProductResponse(@NotNull Product product) {
         return new ProductResponse()
-                .setProductId(product.getProductId())
-                .setName(product.getName())
-                .setPrice(product.getPrice())
-                .setCompany(product.getCompany())
-                .setOrdersId(product.getOrders().stream()
-                        .map(Order::getOrderId)
-                        .collect(Collectors.toList()));
+                    .setProductId(product.getProductId())
+                    .setName(product.getName())
+                    .setPrice(product.getPrice())
+                    .setCompany(product.getCompany())
+                    .setOrdersId(product.getOrders() != null ? product.getOrders().stream()
+                            .map(Order::getOrderId)
+                            .collect(Collectors.toList()) : Collections.emptyList());
     }
 }

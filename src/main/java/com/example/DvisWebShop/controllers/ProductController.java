@@ -30,7 +30,7 @@ public class ProductController {
         return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/orders")
     public ResponseEntity<List<OrderResponse>> getProductOrdersById(@PathVariable Integer id) {
         List<OrderResponse> orders = productService.getProductOrdersById(id);
         return ResponseEntity.ok(orders);

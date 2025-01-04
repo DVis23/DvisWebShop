@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,15 +84,14 @@ public class UserServiceImpl extends BaseServices implements UserService {
     @NotNull
     private User buildUserRequest(@NotNull CreateUserRequest request) {
         return new User()
-                .setUserId(request.getUserId())
-                .setLogin(request.getLogin())
-                .setFirstName(request.getFirstName())
-                .setLastName(request.getLastName())
-                .setAge(request.getAge())
-                .setOrders(request.getOrdersId().stream()
-                        .map(orderId -> findEntityById(orderRepository.findById(orderId),
-                                "ORDER", orderId))
-                        .collect(Collectors.toList()));
+                    .setUserId(request.getUserId())
+                    .setLogin(request.getLogin())
+                    .setFirstName(request.getFirstName())
+                    .setLastName(request.getLastName())
+                    .setAge(request.getAge())
+                    .setOrders(request.getOrdersId() != null ? request.getOrdersId().stream()
+                            .map(orderId -> findEntityById(orderRepository.findById(orderId),
+                                    "ORDER", orderId))
+                            .collect(Collectors.toList()) : Collections.emptyList());
     }
-
 }

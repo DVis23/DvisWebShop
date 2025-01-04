@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,9 +86,9 @@ public class ProductServiceImpl extends BaseServices implements ProductService{
                 .setName(request.getName())
                 .setPrice(request.getPrice())
                 .setCompany(request.getCompany())
-                .setOrders(request.getOrdersId().stream()
+                .setOrders(request.getOrdersId() != null ? request.getOrdersId().stream()
                         .map(orderId -> findEntityById(orderRepository.findById(orderId),
                                 "OLDER", orderId))
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()) : Collections.emptyList());
     }
 }
