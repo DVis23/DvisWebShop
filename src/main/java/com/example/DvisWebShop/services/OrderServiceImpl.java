@@ -8,6 +8,7 @@ import com.example.DvisWebShop.models.Order;
 import com.example.DvisWebShop.repositories.OrderRepository;
 import com.example.DvisWebShop.repositories.ProductRepository;
 import com.example.DvisWebShop.repositories.UserRepository;
+import com.example.DvisWebShop.utils.EntityBuilder;
 import com.example.DvisWebShop.utils.ResponseBuilder;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 
@@ -63,8 +63,10 @@ public class OrderServiceImpl extends BaseServices implements OrderService {
     @NotNull
     @Transactional
     public OrderResponse createOrder(@NotNull CreateOrderRequest createOrderRequest) {
-        Order order = buildOrderRequest(createOrderRequest);
-        return ResponseBuilder.buildOrderResponse(orderRepository.save(buildOrderRequest(createOrderRequest)));
+        Order order = EntityBuilder.buildOrderRequest(createOrderRequest,
+                id -> findEntityById(userRepository.findById(id), "USER", id),
+                id -> findEntityById(productRepository.findById(id), "PRODUCT", id));
+        return ResponseBuilder.buildOrderResponse(orderRepository.save(order));
     }
 
     @Override
@@ -87,19 +89,5 @@ public class OrderServiceImpl extends BaseServices implements OrderService {
                     return true;
                 })
                 .orElseThrow(() -> new EntityNotFoundException("ORDER with id = '" + id + "' does not exist"));
-    }
-
-    @NotNull
-    private Order buildOrderRequest(@NotNull CreateOrderRequest request) {
-        return new Order()
-                .setOrderId(request.getOrderId())
-                .setPrice(request.getPrice())
-                .setDate(request.getDate())
-                .setUser(findEntityById(userRepository.findById(request.getUserId()),
-                        "USER", request.getUserId()))
-                .setProducts(request.getProductsId().stream()
-                        .map(productId -> findEntityById(productRepository.findById(productId),
-                                "PRODUCT", productId))
-                        .collect(Collectors.toList()));
     }
 }

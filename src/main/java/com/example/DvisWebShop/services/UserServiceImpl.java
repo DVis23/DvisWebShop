@@ -7,6 +7,7 @@ import com.example.DvisWebShop.models.User;
 import com.example.DvisWebShop.repositories.OrderRepository;
 import com.example.DvisWebShop.repositories.UserRepository;
 
+import com.example.DvisWebShop.utils.EntityBuilder;
 import com.example.DvisWebShop.utils.ResponseBuilder;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,8 @@ public class UserServiceImpl extends BaseServices implements UserService {
     @NotNull
     @Transactional
     public UserResponse createUser(@NotNull CreateUserRequest createUserRequest) {
-        User user = buildUserRequest(createUserRequest);
+        User user = EntityBuilder.buildUserRequest(createUserRequest,
+                id -> findEntityById(orderRepository.findById(id), "OLDER", id));
         return ResponseBuilder.buildUserResponse(userRepository.save(user));
     }
 
@@ -79,19 +81,5 @@ public class UserServiceImpl extends BaseServices implements UserService {
                     return true;
                 })
                 .orElseThrow(() -> new EntityNotFoundException("USER with id = '" + id + "' does not exist"));
-    }
-
-    @NotNull
-    private User buildUserRequest(@NotNull CreateUserRequest request) {
-        return new User()
-                    .setUserId(request.getUserId())
-                    .setLogin(request.getLogin())
-                    .setFirstName(request.getFirstName())
-                    .setLastName(request.getLastName())
-                    .setAge(request.getAge())
-                    .setOrders(request.getOrdersId() != null ? request.getOrdersId().stream()
-                            .map(orderId -> findEntityById(orderRepository.findById(orderId),
-                                    "ORDER", orderId))
-                            .collect(Collectors.toList()) : Collections.emptyList());
     }
 }

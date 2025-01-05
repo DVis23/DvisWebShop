@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 public class ResponseBuilder {
 
+    @NotNull
     public static UserResponse buildUserResponse(@NotNull User user) {
         return new UserResponse()
                     .setUserId(user.getUserId())
@@ -25,6 +26,7 @@ public class ResponseBuilder {
                             .collect(Collectors.toList()) : Collections.emptyList());
     }
 
+    @NotNull
     public static OrderResponse buildOrderResponse(@NotNull Order order) {
         return new OrderResponse()
                 .setOrderId(order.getOrderId())
@@ -36,6 +38,7 @@ public class ResponseBuilder {
                         .collect(Collectors.toList()));
     }
 
+    @NotNull
     public static ProductResponse buildProductResponse(@NotNull Product product) {
         return new ProductResponse()
                     .setProductId(product.getProductId())

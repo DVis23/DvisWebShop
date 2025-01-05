@@ -6,6 +6,7 @@ import com.example.DvisWebShop.DTO.responses.ProductResponse;
 import com.example.DvisWebShop.models.Product;
 import com.example.DvisWebShop.repositories.OrderRepository;
 import com.example.DvisWebShop.repositories.ProductRepository;
+import com.example.DvisWebShop.utils.EntityBuilder;
 import com.example.DvisWebShop.utils.ResponseBuilder;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 
@@ -53,7 +52,8 @@ public class ProductServiceImpl extends BaseServices implements ProductService{
     @NotNull
     @Transactional
     public ProductResponse createProduct(@NotNull CreateProductRequest createProductRequest) {
-        Product product = buildProductRequest(createProductRequest);
+        Product product = EntityBuilder.buildProductRequest(createProductRequest,
+                id -> findEntityById(orderRepository.findById(id), "OLDER", id));
         return ResponseBuilder.buildProductResponse(productRepository.save(product));
     }
 
@@ -78,17 +78,5 @@ public class ProductServiceImpl extends BaseServices implements ProductService{
                     return true;
                 })
                 .orElseThrow(() -> new EntityNotFoundException("PRODUCT with id = '" + id + "' does not exist"));
-    }
-
-    private Product buildProductRequest(@NotNull CreateProductRequest request) {
-        return new Product()
-                .setProductId(request.getProductId())
-                .setName(request.getName())
-                .setPrice(request.getPrice())
-                .setCompany(request.getCompany())
-                .setOrders(request.getOrdersId() != null ? request.getOrdersId().stream()
-                        .map(orderId -> findEntityById(orderRepository.findById(orderId),
-                                "OLDER", orderId))
-                        .collect(Collectors.toList()) : Collections.emptyList());
     }
 }
