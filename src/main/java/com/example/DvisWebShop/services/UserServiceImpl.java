@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 
@@ -55,7 +53,7 @@ public class UserServiceImpl extends BaseServices implements UserService {
     @Transactional
     public UserResponse createUser(@NotNull CreateUserRequest createUserRequest) {
         User user = EntityBuilder.buildUserRequest(createUserRequest,
-                id -> findEntityById(orderRepository.findById(id), "OLDER", id));
+                id -> findEntityById(orderRepository.findById(id), "ORDER", id));
         return ResponseBuilder.buildUserResponse(userRepository.save(user));
     }
 

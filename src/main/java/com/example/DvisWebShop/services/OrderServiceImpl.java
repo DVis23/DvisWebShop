@@ -90,4 +90,10 @@ public class OrderServiceImpl extends BaseServices implements OrderService {
                 })
                 .orElseThrow(() -> new EntityNotFoundException("ORDER with id = '" + id + "' does not exist"));
     }
+
+    public boolean isOwner(Integer orderId, Integer userId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+        return order.getUser().getUserId().equals(userId);
+    }
 }

@@ -53,7 +53,7 @@ public class ProductServiceImpl extends BaseServices implements ProductService{
     @Transactional
     public ProductResponse createProduct(@NotNull CreateProductRequest createProductRequest) {
         Product product = EntityBuilder.buildProductRequest(createProductRequest,
-                id -> findEntityById(orderRepository.findById(id), "OLDER", id));
+                id -> findEntityById(orderRepository.findById(id), "ORDER", id));
         return ResponseBuilder.buildProductResponse(productRepository.save(product));
     }
 
