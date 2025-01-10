@@ -30,7 +30,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and #id == principal.userId)")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Integer id) {
         UserResponse user = userService.getUserById(id);
-        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/{id}/orders")
@@ -53,7 +53,7 @@ public class UserController {
             @PathVariable Integer id,
             @RequestBody CreateUserRequest createUserRequest) {
         UserResponse updatedUser = userService.updateUser(id, createUserRequest);
-        return updatedUser != null ? ResponseEntity.ok(updatedUser) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")

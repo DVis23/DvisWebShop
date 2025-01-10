@@ -29,16 +29,12 @@ public class EntityBuilder {
     }
 
     @NotNull
-    public static Product buildProductRequest(@NotNull CreateProductRequest request,
-                                              @NotNull Function<Integer, Order> findEntityByIdOrder) {
+    public static Product buildProductRequest(@NotNull CreateProductRequest request) {
         return new Product()
                 .setProductId(request.getProductId())
                 .setName(request.getName())
                 .setPrice(request.getPrice())
-                .setCompany(request.getCompany())
-                .setOrders(request.getOrdersId() != null ? request.getOrdersId().stream()
-                        .map(findEntityByIdOrder)
-                        .collect(Collectors.toList()) : Collections.emptyList());
+                .setCompany(request.getCompany());
     }
 
     @NotNull

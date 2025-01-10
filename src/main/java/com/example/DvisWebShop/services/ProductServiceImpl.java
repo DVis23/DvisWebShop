@@ -3,6 +3,7 @@ package com.example.DvisWebShop.services;
 import com.example.DvisWebShop.DTO.requests.CreateProductRequest;
 import com.example.DvisWebShop.DTO.responses.OrderResponse;
 import com.example.DvisWebShop.DTO.responses.ProductResponse;
+import com.example.DvisWebShop.exception.ResourceNotFoundException;
 import com.example.DvisWebShop.models.Product;
 import com.example.DvisWebShop.repositories.OrderRepository;
 import com.example.DvisWebShop.repositories.ProductRepository;
@@ -52,8 +53,7 @@ public class ProductServiceImpl extends BaseServices implements ProductService{
     @NotNull
     @Transactional
     public ProductResponse createProduct(@NotNull CreateProductRequest createProductRequest) {
-        Product product = EntityBuilder.buildProductRequest(createProductRequest,
-                id -> findEntityById(orderRepository.findById(id), "ORDER", id));
+        Product product = EntityBuilder.buildProductRequest(createProductRequest);
         return ResponseBuilder.buildProductResponse(productRepository.save(product));
     }
 
@@ -62,9 +62,9 @@ public class ProductServiceImpl extends BaseServices implements ProductService{
     @Transactional
     public ProductResponse updateProduct(@NotNull Integer id, @NotNull CreateProductRequest createProductRequest) {
         Product product = findEntityById(productRepository.findById(id), "PRODUCT", id);
-        ofNullable(createProductRequest.getName()).map(product::setName);
-        ofNullable(createProductRequest.getPrice()).map(product::setPrice);
-        ofNullable(createProductRequest.getCompany()).map(product::setCompany);
+        ofNullable(createProductRequest.getName()).ifPresent(product::setName);
+        ofNullable(createProductRequest.getPrice()).ifPresent(product::setPrice);
+        ofNullable(createProductRequest.getCompany()).ifPresent(product::setCompany);
         return ResponseBuilder.buildProductResponse(productRepository.save(product));
     }
 
@@ -77,6 +77,6 @@ public class ProductServiceImpl extends BaseServices implements ProductService{
                     productRepository.deleteById(id);
                     return true;
                 })
-                .orElseThrow(() -> new EntityNotFoundException("PRODUCT with id = '" + id + "' does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("PRODUCT", "id", id));
     }
 }

@@ -31,14 +31,14 @@ public class OrderController {
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and @orderService.isOwner(#id, authentication.principal.userId))")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer id) {
         OrderResponse order = orderService.getOrderById(id);
-        return order != null ? ResponseEntity.ok(order) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(order);
     }
 
     @GetMapping("/{id}/users")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and @orderService.isOwner(#id, authentication.principal.userId))")
     public ResponseEntity<UserResponse> getOrderUserById(@PathVariable Integer id) {
         UserResponse user = orderService.getOrderUserById(id);
-        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/{id}/products")
@@ -61,7 +61,7 @@ public class OrderController {
             @PathVariable Integer id,
             @RequestBody CreateOrderRequest createOrderRequest) {
         OrderResponse order = orderService.updateOrder(id, createOrderRequest);
-        return order != null ? ResponseEntity.ok(order) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(order);
     }
 
     @DeleteMapping("/{id}")

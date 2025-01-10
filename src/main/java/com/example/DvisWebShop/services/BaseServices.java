@@ -1,5 +1,6 @@
 package com.example.DvisWebShop.services;
 
+import com.example.DvisWebShop.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
@@ -15,6 +16,6 @@ public abstract class BaseServices {
     }
 
     protected <T> T findEntityById(Optional<T> optionalEntity, String entityName, Integer id) {
-        return optionalEntity.orElseThrow(() -> new EntityNotFoundException(entityName + " with id = '" + id + "' does not exist"));
+        return optionalEntity.orElseThrow(() -> new ResourceNotFoundException(entityName, "id", id));
     }
 }

@@ -30,7 +30,7 @@ public class ProductController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Integer id) {
         ProductResponse product = productService.getProductById(id);
-        return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(product);
     }
 
     @GetMapping("/{id}/orders")
@@ -53,7 +53,7 @@ public class ProductController {
             @PathVariable Integer id,
             @RequestBody CreateProductRequest createProductRequest) {
         ProductResponse product = productService.updateProduct(id, createProductRequest);
-        return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(product);
     }
 
     @DeleteMapping("/{id}")

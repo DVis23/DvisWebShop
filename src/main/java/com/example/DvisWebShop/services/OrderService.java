@@ -30,4 +30,6 @@ public interface OrderService {
 
     @NotNull
     boolean deleteOrder(@NotNull Integer id);
+
+    boolean isOwner(@NotNull Integer orderId, @NotNull Integer userId);
 }

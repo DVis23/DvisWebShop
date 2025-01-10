@@ -4,6 +4,7 @@ import com.example.DvisWebShop.DTO.requests.CreateOrderRequest;
 import com.example.DvisWebShop.DTO.responses.OrderResponse;
 import com.example.DvisWebShop.DTO.responses.ProductResponse;
 import com.example.DvisWebShop.DTO.responses.UserResponse;
+import com.example.DvisWebShop.exception.ResourceNotFoundException;
 import com.example.DvisWebShop.models.Order;
 import com.example.DvisWebShop.repositories.OrderRepository;
 import com.example.DvisWebShop.repositories.ProductRepository;
@@ -21,7 +22,7 @@ import java.util.List;
 
 import static java.util.Optional.ofNullable;
 
-@Service
+@Service("orderService")
 @RequiredArgsConstructor
 public class OrderServiceImpl extends BaseServices implements OrderService {
 
@@ -74,8 +75,8 @@ public class OrderServiceImpl extends BaseServices implements OrderService {
     @Transactional
     public OrderResponse updateOrder(@NotNull Integer id, @NotNull CreateOrderRequest createOrderRequest) {
         Order order = findEntityById(orderRepository.findById(id), "ORDER", id);
-        ofNullable(createOrderRequest.getPrice()).map(order::setPrice);
-        ofNullable(createOrderRequest.getDate()).map(order::setDate);
+        ofNullable(createOrderRequest.getPrice()).ifPresent(order::setPrice);
+        ofNullable(createOrderRequest.getDate()).ifPresent(order::setDate);
         return ResponseBuilder.buildOrderResponse(orderRepository.save(order));
     }
 
@@ -88,12 +89,12 @@ public class OrderServiceImpl extends BaseServices implements OrderService {
                     orderRepository.deleteById(id);
                     return true;
                 })
-                .orElseThrow(() -> new EntityNotFoundException("ORDER with id = '" + id + "' does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("ORDER", "id", id));
     }
 
-    public boolean isOwner(Integer orderId, Integer userId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+    @Override
+    public boolean isOwner(@NotNull Integer orderId, @NotNull Integer userId) {
+        Order order = findEntityById(orderRepository.findById(orderId), "ORDER", orderId);
         return order.getUser().getUserId().equals(userId);
     }
 }

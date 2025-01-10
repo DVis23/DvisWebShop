@@ -3,6 +3,7 @@ package com.example.DvisWebShop.services;
 import com.example.DvisWebShop.DTO.requests.CreateUserRequest;
 import com.example.DvisWebShop.DTO.responses.OrderResponse;
 import com.example.DvisWebShop.DTO.responses.UserResponse;
+import com.example.DvisWebShop.exception.ResourceNotFoundException;
 import com.example.DvisWebShop.models.User;
 import com.example.DvisWebShop.repositories.OrderRepository;
 import com.example.DvisWebShop.repositories.UserRepository;
@@ -62,10 +63,10 @@ public class UserServiceImpl extends BaseServices implements UserService {
     @Transactional
     public UserResponse updateUser(@NotNull Integer id, @NotNull CreateUserRequest createUserRequest) {
         User user = findEntityById(userRepository.findById(id), "USER", id);
-        ofNullable(createUserRequest.getLogin()).map(user::setLogin);
-        ofNullable(createUserRequest.getFirstName()).map(user::setFirstName);
-        ofNullable(createUserRequest.getLastName()).map(user::setLastName);
-        ofNullable(createUserRequest.getAge()).map(user::setAge);
+        ofNullable(createUserRequest.getLogin()).ifPresent(user::setLogin);
+        ofNullable(createUserRequest.getFirstName()).ifPresent(user::setFirstName);
+        ofNullable(createUserRequest.getLastName()).ifPresent(user::setLastName);
+        ofNullable(createUserRequest.getAge()).ifPresent(user::setAge);
         return ResponseBuilder.buildUserResponse(userRepository.save(user));
     }
 
@@ -78,6 +79,6 @@ public class UserServiceImpl extends BaseServices implements UserService {
                     userRepository.deleteById(id);
                     return true;
                 })
-                .orElseThrow(() -> new EntityNotFoundException("USER with id = '" + id + "' does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("USER", "id", id));
     }
 }
