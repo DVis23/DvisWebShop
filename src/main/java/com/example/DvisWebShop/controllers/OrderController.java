@@ -49,7 +49,7 @@ public class OrderController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and @orderService.isOwner(#id, authentication.principal.userId))")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and #createOrderRequest.userId == authentication.principal.userId)")
     public ResponseEntity<OrderResponse> createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
         OrderResponse order = orderService.createOrder(createOrderRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
