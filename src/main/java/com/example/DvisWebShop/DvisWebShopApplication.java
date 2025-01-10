@@ -22,8 +22,9 @@ public class DvisWebShopApplication {
 			RoleRepository roleRepository
 			) {
 		return args -> {
-			roleRepository.save(new Role(RoleName.ROLE_USER));
-			roleRepository.save(new Role(RoleName.ROLE_ADMIN));
+			for (RoleName roleName : RoleName.values()) {
+				roleRepository.findByName(roleName).orElseGet(() -> roleRepository.save(new Role(roleName)));
+			}
 		};
 	}
 }

@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 public class CreateProductRequest {
-    private Integer productId;
     private String name;
     private BigDecimal price;
     private String company;

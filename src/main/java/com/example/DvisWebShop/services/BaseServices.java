@@ -1,7 +1,6 @@
 package com.example.DvisWebShop.services;
 
 import com.example.DvisWebShop.exception.ResourceNotFoundException;
-import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;

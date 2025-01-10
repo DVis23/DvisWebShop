@@ -15,23 +15,17 @@ import java.util.stream.Collectors;
 public class EntityBuilder {
 
     @NotNull
-    public static User buildUserRequest(@NotNull CreateUserRequest request,
-                                        @NotNull Function<Integer, Order> findEntityByIdOrder) {
+    public static User buildUserRequest(@NotNull CreateUserRequest request) {
         return new User()
-                .setUserId(request.getUserId())
                 .setLogin(request.getLogin())
                 .setFirstName(request.getFirstName())
                 .setLastName(request.getLastName())
-                .setAge(request.getAge())
-                .setOrders(request.getOrdersId() != null ? request.getOrdersId().stream()
-                        .map(findEntityByIdOrder)
-                        .collect(Collectors.toList()) : Collections.emptyList());
+                .setAge(request.getAge());
     }
 
     @NotNull
     public static Product buildProductRequest(@NotNull CreateProductRequest request) {
         return new Product()
-                .setProductId(request.getProductId())
                 .setName(request.getName())
                 .setPrice(request.getPrice())
                 .setCompany(request.getCompany());
@@ -42,7 +36,6 @@ public class EntityBuilder {
                                     @NotNull Function<Integer, User> findEntityByIdUser,
                                     @NotNull Function<Integer, Product> findEntityByIdProduct) {
         return new Order()
-                .setOrderId(request.getOrderId())
                 .setPrice(request.getPrice())
                 .setDate(request.getDate())
                 .setUser(findEntityByIdUser.apply(request.getUserId()))

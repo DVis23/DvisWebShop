@@ -4,19 +4,21 @@ import com.example.DvisWebShop.DTO.requests.CreateUserRequest;
 import com.example.DvisWebShop.DTO.responses.OrderResponse;
 import com.example.DvisWebShop.DTO.responses.UserResponse;
 import com.example.DvisWebShop.exception.ResourceNotFoundException;
+import com.example.DvisWebShop.models.Role;
+import com.example.DvisWebShop.models.RoleName;
 import com.example.DvisWebShop.models.User;
-import com.example.DvisWebShop.repositories.OrderRepository;
+import com.example.DvisWebShop.repositories.RoleRepository;
 import com.example.DvisWebShop.repositories.UserRepository;
 
 import com.example.DvisWebShop.utils.EntityBuilder;
 import com.example.DvisWebShop.utils.ResponseBuilder;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Optional.ofNullable;
 
@@ -25,7 +27,7 @@ import static java.util.Optional.ofNullable;
 public class UserServiceImpl extends BaseServices implements UserService {
 
     private final UserRepository userRepository;
-    private final OrderRepository orderRepository;
+    private final RoleRepository roleRepository;
 
     @Override
     @NotNull
@@ -53,8 +55,10 @@ public class UserServiceImpl extends BaseServices implements UserService {
     @NotNull
     @Transactional
     public UserResponse createUser(@NotNull CreateUserRequest createUserRequest) {
-        User user = EntityBuilder.buildUserRequest(createUserRequest,
-                id -> findEntityById(orderRepository.findById(id), "ORDER", id));
+        User user = EntityBuilder.buildUserRequest(createUserRequest);
+        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        user.setRoles(Set.of(userRole));
         return ResponseBuilder.buildUserResponse(userRepository.save(user));
     }
 

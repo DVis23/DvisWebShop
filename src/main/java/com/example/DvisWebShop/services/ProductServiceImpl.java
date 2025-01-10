@@ -9,7 +9,6 @@ import com.example.DvisWebShop.repositories.OrderRepository;
 import com.example.DvisWebShop.repositories.ProductRepository;
 import com.example.DvisWebShop.utils.EntityBuilder;
 import com.example.DvisWebShop.utils.ResponseBuilder;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
