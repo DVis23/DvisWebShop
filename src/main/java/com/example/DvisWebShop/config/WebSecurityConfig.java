@@ -1,4 +1,4 @@
-package com.example.DvisWebShop.security;
+package com.example.DvisWebShop.config;
 
 import com.example.DvisWebShop.security.jwt.*;
 import com.example.DvisWebShop.services.UserDetailsServiceImpl;
@@ -44,17 +44,20 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Отключаем CSRF
-                .cors(cors -> cors.configure(http)) // Настраиваем CORS
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configure(http))
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Без сессий
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll() // Доступ для всех
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // Доступ только для админов
-                        .anyRequest().authenticated()) // Все остальные запросы требуют аутентификации
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(unauthorizedHandler)) // Обработка исключений
-                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); // Добавляем фильтр JWT
+                        .authenticationEntryPoint(unauthorizedHandler))
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

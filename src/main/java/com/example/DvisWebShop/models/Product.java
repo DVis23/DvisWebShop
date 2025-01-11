@@ -1,5 +1,6 @@
 package com.example.DvisWebShop.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,7 @@ public class Product {
     private String company;
 
     @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Order> orders;
 
     @Override

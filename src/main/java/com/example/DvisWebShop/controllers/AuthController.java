@@ -10,6 +10,8 @@ import com.example.DvisWebShop.repositories.RoleRepository;
 import com.example.DvisWebShop.repositories.UserRepository;
 import com.example.DvisWebShop.security.UserDetailsImpl;
 import com.example.DvisWebShop.utils.JwtUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -40,6 +43,7 @@ public class AuthController {
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
 
+    @Operation(summary = "Authenticate user and return JWT token")
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
@@ -58,6 +62,7 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUserId(), userDetails.getUsername(), roles));
     }
 
+    @Operation(summary = "Register a new user")
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest signUpRequest) {
         if (userRepository.findByLogin(signUpRequest.getLogin()).isPresent()) {
